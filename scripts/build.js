@@ -44,7 +44,7 @@ function resolveAvatar(avatar) {
 }
 
 function loadAndValidate(dir, label, rules) {
-  if (!fs.existsSync(dir)) { console.warn(`⚠️  ${dir} not found`); return []; }
+  if (!fs.existsSync(dir)) throw new Error(`${label} directory missing: ${dir}`);
   const files = fs.readdirSync(dir).filter(f => f.endsWith('.json'));
   const result = [];
   for (const f of files) {
@@ -59,6 +59,9 @@ function loadAndValidate(dir, label, rules) {
     } catch (e) { console.error(`  ❌ ${f}: ${e.message}`); }
   }
   console.log(`   → ${result.length}/${files.length} ${label} loaded`);
+  if (result.length !== files.length) {
+    throw new Error(`${label} validation failed; existing output has not been changed`);
+  }
   return result;
 }
 
